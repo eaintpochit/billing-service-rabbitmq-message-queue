@@ -6,6 +6,7 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Configuration
 public class RabbitMQConfig {
     public static final String QUEUE_NAME = "biller.message.queue";
-    public static final String EXCHANGE_NAME = "topic.receiver.exchange";
+
+    public static final String VENDOR_QUEUE_NAME = "vendor.message.queue";
+    public static final String EXCHANGE_NAME = "topic.exchange.vendor";
 
     @Bean
     public Queue queue() {
@@ -52,9 +55,8 @@ public class RabbitMQConfig {
 
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(new SimpleMessageConverter());
-        return rabbitTemplate;
+        return new RabbitTemplate(connectionFactory);
+
     }
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
@@ -63,5 +65,10 @@ public class RabbitMQConfig {
         factory.setConcurrentConsumers(3);  // Start with 3 consumers
         factory.setMaxConcurrentConsumers(10);  // Can scale up to 10 consumers
         return factory;
+    }
+
+    @Bean
+    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+        return new RabbitAdmin(connectionFactory);
     }
 }
