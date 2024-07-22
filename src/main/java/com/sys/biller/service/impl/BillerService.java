@@ -1,8 +1,9 @@
-package com.sys.biller.service;
+package com.sys.biller.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sys.biller.config.RabbitMQConfig;
 import com.sys.biller.dto.BillerRequestDto;
+import com.sys.biller.service.IBillerService;
 import com.sys.biller.util.Message;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BillerService {
+public class BillerService implements IBillerService {
 
     @Autowired
     RabbitTemplate rabbitTemplate;
@@ -22,7 +23,7 @@ public class BillerService {
     @Autowired
     private ObjectMapper objectMapper;
 
-
+    @Override
     public void send() {
         rabbitTemplate.convertAndSend(topicExchange.getName(), ""+ Message.SUCCESS.getCode(), Message.SUCCESS.getDescription());
         System.out.println(" [x] Sent '" + Message.SUCCESS.getDescription() + "'");
